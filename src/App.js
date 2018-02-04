@@ -1,21 +1,74 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import "./App.css";
+import { addTodo, toggleTodo } from "./actions";
+import LinkFilter from "./link-filter";
+
+const VisibilityFilter = (todo, filter) => {
+  switch (filter) {
+    case "ACTIVE":
+      return todo.filter(item => !item.completed);
+
+    case "COMPLETED":
+      return todo.filter(item => item.completed);
+
+    case "ALL":
+    default:
+      return todo;
+  }
+};
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  addItem = () => {
+    if (this.input.value.trim().length === 0) {
+      return false;
+    }
+    this.props.addTodo({ text: this.input.value });
+    this.input.value = "";
+  };
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <input ref={node => (this.input = node)} />
+        <button onClick={this.addItem}>Add</button>
+
+        {this.props.todo.map(item => (
+          <p
+            onClick={() => this.props.toggleTodo(item.index)}
+            key={item.index}
+            style={{ textDecoration: item.completed ? "line-through" : "" }}
+          >
+            {item.text}
+          </p>
+        ))}
+
+        <br />
+        <LinkFilter filter="ALL">All</LinkFilter>
+        <LinkFilter filter="ACTIVE">Active</LinkFilter>
+        <LinkFilter filter="COMPLETED">Completed</LinkFilter>
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    todo: VisibilityFilter(state.todo, state.filter)
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  addTodo(data) {
+    dispatch(addTodo(data));
+  },
+  toggleTodo(data) {
+    dispatch(toggleTodo(data));
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
