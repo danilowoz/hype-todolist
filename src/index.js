@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import registerServiceWorker from "./registerServiceWorker";
+import Single from "./Single";
+
+import { BrowserRouter as Router, Route } from "react-router-dom";
+
 import { createStore, applyMiddleware } from "redux";
 import { createLogger } from "redux-logger";
 import { Provider } from "react-redux";
@@ -27,9 +30,13 @@ const logger = createLogger({
 ReactDOM.render(
   <Provider store={createStore(Reducer, applyMiddleware(logger))}>
     <ApolloProvider client={client}>
-      <App />
+      <Router>
+        <div>
+          <Route exact path="/" component={App} />
+          <Route path="/:listId" component={Single} />
+        </div>
+      </Router>
     </ApolloProvider>
   </Provider>,
   document.getElementById("root")
 );
-registerServiceWorker();

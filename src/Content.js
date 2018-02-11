@@ -2,6 +2,7 @@ import React from "react";
 import { graphql } from "react-apollo";
 import { compose, lifecycle } from "recompose";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
 import LinkFilter from "./link-filter";
 import { filterTodo } from "./actions";
@@ -36,7 +37,9 @@ const Content = ({
     <div style={style}>
       {
         <h1>
-          {list.name} <button onClick={() => removeTodo(list.id)}>x</button>
+          <Link to={`/${list.id}`}>
+            {list.name} <button onClick={() => removeTodo(list.id)}>x</button>
+          </Link>
         </h1>
       }
 
