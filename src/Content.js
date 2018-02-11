@@ -1,18 +1,12 @@
 import React from "react";
-import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { compose } from "recompose";
 
-import "./App.css";
 import { addTodo, toggleTodo } from "./actions";
 import LinkFilter from "./link-filter";
+import { GetTodo, UpdateItem } from "./queries";
 
-const Content = ({
-  data: { loading, allTodoes, UpdateItem },
-  updateItem,
-  ...other
-}) => {
-  console.log(other);
+const Content = ({ data: { loading, allTodoes }, updateItem, ...other }) => {
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -34,41 +28,25 @@ const Content = ({
   );
 };
 
-const query = graphql(gql`
-  query Todo {
-    allTodoes {
-      id
-      name
-      todolists {
-        id
-        text
-        completed
-        updatedAt
-      }
-    }
+const setItem = graphql(UpdateItem, {
+  props: ({ mutate }) => ({
+    updateItem: (id, completed) =>
+      mutate({
+        variables: { id, completed },
+        optimisticResponse: {
+          __typename: "Mutation",
+          updateItem: {
+            __typename: "allTodoes",
+            id,
+            completed
+          }
+        }
+      })
+  }),
+  options: {
+    refetchQueries: ["Todo"]
   }
-`);
-
-const UpdateItem = graphql(
-  gql`
-    mutation UpdateItem($id: ID!, $completed: Boolean) {
-      updateItem(id: $id, completed: $completed) {
-        completed
-      }
-    }
-  `,
-  {
-    props: ({ mutate }) => ({
-      updateItem: (id, completed) =>
-        mutate({
-          variables: { id, completed }
-        })
-    }),
-    options: {
-      refetchQueries: ["Todo"]
-    }
-  }
-);
-const enhance = compose(query, UpdateItem);
+});
+const enhance = compose(graphql(GetTodo), setItem);
 
 export default enhance(Content);

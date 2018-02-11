@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
-import "./App.css";
 import { addTodo, toggleTodo } from "./actions";
 import LinkFilter from "./link-filter";
 
@@ -35,7 +34,6 @@ class App extends Component {
   };
 
   render() {
-    console.log(this.props);
     return (
       <div className="App">
         <input ref={node => (this.input = node)} />
