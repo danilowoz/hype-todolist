@@ -1,28 +1,47 @@
 import React from "react";
 import { graphql } from "react-apollo";
-import { compose } from "recompose";
+import { compose, lifecycle } from "recompose";
+import { connect } from "react-redux";
 
-import { addTodo, toggleTodo } from "./actions";
 import LinkFilter from "./link-filter";
-import { GetTodo, UpdateItem, DeleteItem } from "./queries";
+import { filterTodo } from "./actions";
+import { GetTodo, UpdateItem, DeleteItem, DeleteTodo } from "./queries";
 import AddItem from "./add-item";
 
+const VisibilityFilter = (todo, filter) => {
+  switch (filter) {
+    case "ACTIVE":
+      return todo.filter(item => !item.completed);
+
+    case "COMPLETED":
+      return todo.filter(item => item.completed);
+
+    case "ALL":
+    default:
+      return todo;
+  }
+};
+
 const Content = ({
-  data: { loading, allTodoes },
+  list,
   updateItem,
   deleteItem,
-  ...other
+  filter,
+  removeTodo,
+  style
 }) => {
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  const renderList = VisibilityFilter(list.todolists, filter[list.id]);
 
   return (
-    <div>
-      {<h1>{allTodoes[0].name}</h1>}
+    <div style={style}>
+      {
+        <h1>
+          {list.name} <button onClick={() => removeTodo(list.id)}>x</button>
+        </h1>
+      }
 
-      <AddItem currentList={allTodoes[0].id} />
-      {allTodoes[0].todolists.map(item => (
+      <AddItem currentList={list.id} />
+      {renderList.map(item => (
         <p key={item.id}>
           <span
             style={{ textDecoration: item.completed ? "line-through" : "none" }}
@@ -31,11 +50,20 @@ const Content = ({
             {item.text}
           </span>
 
-          <button onClick={() => deleteItem(item.id, allTodoes[0].id)}>
-            x
-          </button>
+          <button onClick={() => deleteItem(item.id, list.id)}>x</button>
         </p>
       ))}
+
+      <br />
+      <LinkFilter filter="ALL" list={list.id}>
+        All
+      </LinkFilter>
+      <LinkFilter filter="ACTIVE" list={list.id}>
+        Active
+      </LinkFilter>
+      <LinkFilter filter="COMPLETED" list={list.id}>
+        Completed
+      </LinkFilter>
     </div>
   );
 };
@@ -82,6 +110,54 @@ const deleteItem = graphql(DeleteItem, {
   })
 });
 
-const enhance = compose(graphql(GetTodo), setItem, deleteItem);
+const removeTodo = graphql(DeleteTodo, {
+  props: ({ mutate }) => ({
+    removeTodo: id =>
+      mutate({
+        variables: { id },
+        optimisticResponse: {
+          __typename: "Mutation",
+          removeTodo: {
+            __typename: "Todo",
+            id
+          }
+        },
+        update: (proxy, { data: { removeTodo } }) => {
+          const data = proxy.readQuery({ query: GetTodo });
+          const listFiltered = data.allTodoes.filter(item => item.id !== id);
+
+          data.allTodoes = listFiltered;
+
+          proxy.writeQuery({ query: GetTodo, data });
+        }
+      })
+  })
+});
+
+const lifeComponent = lifecycle({
+  componentWillMount() {
+    this.props.filterTodo({ filter: "ALL", list: this.props.list.id });
+  }
+});
+
+const mapStateToProps = state => {
+  return {
+    filter: state.filter
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  filterTodo(data) {
+    dispatch(filterTodo(data));
+  }
+});
+
+const enhance = compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  setItem,
+  deleteItem,
+  removeTodo,
+  lifeComponent
+);
 
 export default enhance(Content);

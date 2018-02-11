@@ -1,16 +1,12 @@
 import React, { Fragment } from "react";
 import { graphql } from "react-apollo";
 import { compose, withState } from "recompose";
-import { CreateItem, GetTodo } from "./queries";
+import { CreateTodo, GetTodo } from "./queries";
 
-const AddItem = ({ createItem, currentList, value, setValue }) => {
+const AddTodo = ({ createTodo, currentList, value, setValue }) => {
   const handle = e => {
     if (value && value.length) {
-      createItem({
-        text: value,
-        completed: false,
-        todoId: currentList
-      });
+      createTodo(value);
 
       setValue("");
     }
@@ -22,8 +18,13 @@ const AddItem = ({ createItem, currentList, value, setValue }) => {
 
   return (
     <form onSubmit={handle}>
+      <br />
+      <br />
+      <br />
+      <hr />
+      <br />
       <input
-        placeholder="add item"
+        placeholder="add todo"
         value={value}
         onChange={event => setValue(event.target.value)}
       />
@@ -34,24 +35,23 @@ const AddItem = ({ createItem, currentList, value, setValue }) => {
 
 const state = withState("value", "setValue", "");
 
-const create = graphql(CreateItem, {
+const create = graphql(CreateTodo, {
   props: ({ mutate }) => ({
-    createItem: ({ text, completed, todoId }) =>
+    createTodo: (name, id) =>
       mutate({
-        variables: { text, completed, todoId },
+        variables: { name },
         optimisticResponse: {
           __typename: "Mutation",
-          createItem: {
+          createTodo: {
             __typename: "Todo",
-            text,
-            id: todoId,
-            completed,
-            updatedAt: new Date()
+            name,
+            id: "",
+            todolists: []
           }
         },
-        update: (proxy, { data: { createItem } }) => {
+        update: (proxy, { data: { createTodo } }) => {
           const data = proxy.readQuery({ query: GetTodo });
-          data.allTodoes.find(x => x.id === todoId).todolists.push(createItem);
+          data.allTodoes.push(createTodo);
 
           proxy.writeQuery({ query: GetTodo, data });
         }
@@ -61,4 +61,4 @@ const create = graphql(CreateItem, {
 
 const enhance = compose(create, state);
 
-export default enhance(AddItem);
+export default enhance(AddTodo);

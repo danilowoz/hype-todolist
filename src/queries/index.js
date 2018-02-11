@@ -5,10 +5,12 @@ export const GetTodo = gql`
     allTodoes {
       id
       name
+      __typename
       todolists {
         id
         text
         completed
+        __typename
       }
     }
   }
@@ -20,6 +22,7 @@ export const CreateItem = gql`
       id
       text
       completed
+      __typename
     }
   }
 `;
@@ -37,6 +40,31 @@ export const UpdateItem = gql`
 export const DeleteItem = gql`
   mutation deleteItem($id: ID!) {
     deleteItem(id: $id) {
+      id
+      __typename
+    }
+  }
+`;
+
+export const CreateTodo = gql`
+  mutation createTodo($name: String!) {
+    createTodo(name: $name) {
+      id
+      name
+      __typename
+      todolists {
+        id
+        text
+        completed
+        __typename
+      }
+    }
+  }
+`;
+
+export const DeleteTodo = gql`
+  mutation deleteTodo($id: ID!) {
+    deleteTodo(id: $id) {
       id
       __typename
     }

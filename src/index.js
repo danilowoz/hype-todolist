@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import Content from "./Content";
 import registerServiceWorker from "./registerServiceWorker";
 import { createStore, applyMiddleware } from "redux";
 import { createLogger } from "redux-logger";
@@ -26,12 +25,11 @@ const logger = createLogger({
 });
 
 ReactDOM.render(
-  <ApolloProvider
-    client={client}
-    store={createStore(Reducer, applyMiddleware(logger))}
-  >
-    <Content />
-  </ApolloProvider>,
+  <Provider store={createStore(Reducer, applyMiddleware(logger))}>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </Provider>,
   document.getElementById("root")
 );
 registerServiceWorker();
