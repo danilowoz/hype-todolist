@@ -141,7 +141,9 @@ const removeTodo = graphql(DeleteTodo, {
 
 const lifeComponent = lifecycle({
   componentWillMount() {
-    this.props.filterTodo({ filter: "ALL", list: this.props.list.id })
+    if (!this.props.filter[this.props.list.id]) {
+      this.props.filterTodo({ filter: "ALL", list: this.props.list.id })
+    }
   }
 })
 
