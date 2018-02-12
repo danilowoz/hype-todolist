@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from "graphql-tag"
 
 export const GetTodo = gql`
   query Todo {
@@ -14,7 +14,7 @@ export const GetTodo = gql`
       }
     }
   }
-`;
+`
 
 export const CreateItem = gql`
   mutation createItem($text: String!, $todoId: ID!, $completed: Boolean!) {
@@ -25,7 +25,7 @@ export const CreateItem = gql`
       __typename
     }
   }
-`;
+`
 
 export const UpdateItem = gql`
   mutation updateItem($id: ID!, $completed: Boolean) {
@@ -35,7 +35,7 @@ export const UpdateItem = gql`
       __typename
     }
   }
-`;
+`
 
 export const DeleteItem = gql`
   mutation deleteItem($id: ID!) {
@@ -44,7 +44,7 @@ export const DeleteItem = gql`
       __typename
     }
   }
-`;
+`
 
 export const CreateTodo = gql`
   mutation createTodo($name: String!) {
@@ -60,7 +60,7 @@ export const CreateTodo = gql`
       }
     }
   }
-`;
+`
 
 export const DeleteTodo = gql`
   mutation deleteTodo($id: ID!) {
@@ -69,4 +69,4 @@ export const DeleteTodo = gql`
       __typename
     }
   }
-`;
+`

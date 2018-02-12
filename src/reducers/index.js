@@ -1,6 +1,6 @@
-import { combineReducers } from "redux";
-import filter from "./filter";
+import { combineReducers } from "redux"
+import filter from "./filter"
 
-const Reducer = combineReducers({ filter });
+const Reducer = combineReducers({ filter })
 
-export default Reducer;
+export default Reducer

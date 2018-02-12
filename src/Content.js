@@ -1,29 +1,29 @@
-import React from "react";
-import { graphql } from "react-apollo";
-import { compose, lifecycle } from "recompose";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import React from "react"
+import { graphql } from "react-apollo"
+import { compose, lifecycle } from "recompose"
+import { connect } from "react-redux"
+import { Link } from "react-router-dom"
 
-import LinkFilter from "./link-filter";
-import { filterTodo } from "./actions";
-import { GetTodo, UpdateItem, DeleteItem, DeleteTodo } from "./queries";
-import AddItem from "./add-item";
+import LinkFilter from "./link-filter"
+import { filterTodo } from "./actions"
+import { GetTodo, UpdateItem, DeleteItem, DeleteTodo } from "./queries"
+import AddItem from "./add-item"
 
-import styles from "./style/main.css";
+import styles from "./style/main.css"
 
 const VisibilityFilter = (todo, filter) => {
   switch (filter) {
     case "ACTIVE":
-      return todo.filter(item => !item.completed);
+      return todo.filter(item => !item.completed)
 
     case "COMPLETED":
-      return todo.filter(item => item.completed);
+      return todo.filter(item => item.completed)
 
     case "ALL":
     default:
-      return todo;
+      return todo
   }
-};
+}
 
 const Content = ({
   list,
@@ -33,7 +33,7 @@ const Content = ({
   removeTodo,
   style
 }) => {
-  const renderList = VisibilityFilter(list.todolists, filter[list.id]);
+  const renderList = VisibilityFilter(list.todolists, filter[list.id])
 
   return (
     <div style={style}>
@@ -70,8 +70,8 @@ const Content = ({
         Completed
       </LinkFilter>
     </div>
-  );
-};
+  )
+}
 
 const setItem = graphql(UpdateItem, {
   props: ({ mutate }) => ({
@@ -88,7 +88,7 @@ const setItem = graphql(UpdateItem, {
         }
       })
   })
-});
+})
 
 const deleteItem = graphql(DeleteItem, {
   props: ({ mutate }) => ({
@@ -103,17 +103,17 @@ const deleteItem = graphql(DeleteItem, {
           }
         },
         update: (proxy, { data: { deleteItem } }) => {
-          const data = proxy.readQuery({ query: GetTodo });
-          const list = data.allTodoes.find(x => x.id === todoId).todolists;
-          const listFiltered = list.filter(item => item.id !== id);
+          const data = proxy.readQuery({ query: GetTodo })
+          const list = data.allTodoes.find(x => x.id === todoId).todolists
+          const listFiltered = list.filter(item => item.id !== id)
 
-          data.allTodoes.find(x => x.id === todoId).todolists = listFiltered;
+          data.allTodoes.find(x => x.id === todoId).todolists = listFiltered
 
-          proxy.writeQuery({ query: GetTodo, data });
+          proxy.writeQuery({ query: GetTodo, data })
         }
       })
   })
-});
+})
 
 const removeTodo = graphql(DeleteTodo, {
   props: ({ mutate }) => ({
@@ -128,34 +128,34 @@ const removeTodo = graphql(DeleteTodo, {
           }
         },
         update: (proxy, { data: { removeTodo } }) => {
-          const data = proxy.readQuery({ query: GetTodo });
-          const listFiltered = data.allTodoes.filter(item => item.id !== id);
+          const data = proxy.readQuery({ query: GetTodo })
+          const listFiltered = data.allTodoes.filter(item => item.id !== id)
 
-          data.allTodoes = listFiltered;
+          data.allTodoes = listFiltered
 
-          proxy.writeQuery({ query: GetTodo, data });
+          proxy.writeQuery({ query: GetTodo, data })
         }
       })
   })
-});
+})
 
 const lifeComponent = lifecycle({
   componentWillMount() {
-    this.props.filterTodo({ filter: "ALL", list: this.props.list.id });
+    this.props.filterTodo({ filter: "ALL", list: this.props.list.id })
   }
-});
+})
 
 const mapStateToProps = state => {
   return {
     filter: state.filter
-  };
-};
+  }
+}
 
 const mapDispatchToProps = dispatch => ({
   filterTodo(data) {
-    dispatch(filterTodo(data));
+    dispatch(filterTodo(data))
   }
-});
+})
 
 const enhance = compose(
   connect(mapStateToProps, mapDispatchToProps),
@@ -163,6 +163,6 @@ const enhance = compose(
   deleteItem,
   removeTodo,
   lifeComponent
-);
+)
 
-export default enhance(Content);
+export default enhance(Content)
