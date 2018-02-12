@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { graphql } from "react-apollo";
 import { compose, withState } from "recompose";
 import { CreateItem, GetTodo } from "./queries";

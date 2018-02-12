@@ -120,7 +120,7 @@ const removeTodo = graphql(DeleteTodo, {
         variables: { id },
         optimisticResponse: {
           __typename: "Mutation",
-          removeTodo: {
+          deleteTodo: {
             __typename: "Todo",
             id
           }

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Link, withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { graphql } from "react-apollo";
 import Content from "./Content";
 
