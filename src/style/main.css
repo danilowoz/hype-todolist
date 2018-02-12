@@ -1,0 +1,18 @@
+body {
+  font-family: sans-serif;
+}
+
+.title-main {
+  color: #999;
+  font-weight: 300;
+
+  .link {
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: #000;
+    }
+  }
+}

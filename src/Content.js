@@ -9,6 +9,8 @@ import { filterTodo } from "./actions";
 import { GetTodo, UpdateItem, DeleteItem, DeleteTodo } from "./queries";
 import AddItem from "./add-item";
 
+import styles from "./style/main.css";
+
 const VisibilityFilter = (todo, filter) => {
   switch (filter) {
     case "ACTIVE":
@@ -36,8 +38,8 @@ const Content = ({
   return (
     <div style={style}>
       {
-        <h1>
-          <Link to={`/${list.id}`}>
+        <h1 className={styles.titleMain}>
+          <Link to={`/${list.id}`} className={styles.link}>
             {list.name} <button onClick={() => removeTodo(list.id)}>x</button>
           </Link>
         </h1>
