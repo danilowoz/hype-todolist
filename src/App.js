@@ -1,74 +1,28 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import "./App.css";
-import { addTodo, toggleTodo } from "./actions";
-import LinkFilter from "./link-filter";
+import React, { Fragment } from "react"
+import { graphql } from "react-apollo"
+import { Helmet } from "react-helmet"
 
-const VisibilityFilter = (todo, filter) => {
-  switch (filter) {
-    case "ACTIVE":
-      return todo.filter(item => !item.completed);
+import { GetTodo } from "./queries"
+import Content from "./Content"
+import AddTodo from "./add-todo"
 
-    case "COMPLETED":
-      return todo.filter(item => item.completed);
-
-    case "ALL":
-    default:
-      return todo;
+const App = ({ data: { loading, allTodoes } }) => {
+  if (loading) {
+    return <p>Loading...</p>
   }
-};
-
-class App extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  addItem = () => {
-    if (this.input.value.trim().length === 0) {
-      return false;
-    }
-    this.props.addTodo({ text: this.input.value });
-    this.input.value = "";
-  };
-
-  render() {
-    return (
-      <div className="App">
-        <input ref={node => (this.input = node)} />
-        <button onClick={this.addItem}>Add</button>
-
-        {this.props.todo.map(item => (
-          <p
-            onClick={() => this.props.toggleTodo(item.index)}
-            key={item.index}
-            style={{ textDecoration: item.completed ? "line-through" : "" }}
-          >
-            {item.text}
-          </p>
+  return (
+    <Fragment>
+      <Helmet>
+        <title>All lists</title>
+      </Helmet>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        {allTodoes.map(item => (
+          <Content style={{ margin: "3em" }} key={item.id} list={item} />
         ))}
-
-        <br />
-        <LinkFilter filter="ALL">All</LinkFilter>
-        <LinkFilter filter="ACTIVE">Active</LinkFilter>
-        <LinkFilter filter="COMPLETED">Completed</LinkFilter>
       </div>
-    );
-  }
+      <AddTodo />
+    </Fragment>
+  )
 }
 
-const mapStateToProps = state => {
-  return {
-    todo: VisibilityFilter(state.todo, state.filter)
-  };
-};
-
-const mapDispatchToProps = dispatch => ({
-  addTodo(data) {
-    dispatch(addTodo(data));
-  },
-  toggleTodo(data) {
-    dispatch(toggleTodo(data));
-  }
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default graphql(GetTodo)(App)
