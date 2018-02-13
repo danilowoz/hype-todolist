@@ -1,7 +1,7 @@
-import React from "react";
-import { graphql } from "react-apollo";
-import { compose, withState } from "recompose";
-import { CreateItem, GetTodo } from "./queries";
+import React from "react"
+import { graphql } from "react-apollo"
+import { compose, withState } from "recompose"
+import { CreateItem, GetTodo } from "./queries"
 
 const AddItem = ({ createItem, currentList, value, setValue }) => {
   const handle = e => {
@@ -10,15 +10,15 @@ const AddItem = ({ createItem, currentList, value, setValue }) => {
         text: value,
         completed: false,
         todoId: currentList
-      });
+      })
 
-      setValue("");
+      setValue("")
     }
 
-    e.preventDefault();
+    e.preventDefault()
 
-    return false;
-  };
+    return false
+  }
 
   return (
     <form onSubmit={handle}>
@@ -29,10 +29,10 @@ const AddItem = ({ createItem, currentList, value, setValue }) => {
       />
       <button onClick={handle}>+</button>
     </form>
-  );
-};
+  )
+}
 
-const state = withState("value", "setValue", "");
+const state = withState("value", "setValue", "")
 
 const create = graphql(CreateItem, {
   props: ({ mutate }) => ({
@@ -50,15 +50,15 @@ const create = graphql(CreateItem, {
           }
         },
         update: (proxy, { data: { createItem } }) => {
-          const data = proxy.readQuery({ query: GetTodo });
-          data.allTodoes.find(x => x.id === todoId).todolists.push(createItem);
+          const data = proxy.readQuery({ query: GetTodo })
+          data.allTodoes.find(x => x.id === todoId).todolists.push(createItem)
 
-          proxy.writeQuery({ query: GetTodo, data });
+          proxy.writeQuery({ query: GetTodo, data })
         }
       })
   })
-});
+})
 
-const enhance = compose(create, state);
+const enhance = compose(create, state)
 
-export default enhance(AddItem);
+export default enhance(AddItem)
